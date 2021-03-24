@@ -22,14 +22,14 @@ public class MariaDBConnect {
 			Class.forName(driver);
 			conn = DriverManager.getConnection(DB_URL, "root", "password");
 			if (conn != null) {
-				System.out.println("DB 접속 성공");
+				System.out.println("DB connected!");
 			}
 
 		} catch (ClassNotFoundException e) {
-			System.out.println("드라이버 로드 실패");
+			System.out.println("Driver loading failed");
 			e.printStackTrace();
 		} catch (SQLException e) {
-			System.out.println("DB 접속 실패");
+			System.out.println("DB connection failed");
 			e.printStackTrace();
 		}
 
