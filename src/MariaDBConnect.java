@@ -1,5 +1,6 @@
 import java.sql.*;
 
+// asdf
 public class MariaDBConnect {
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
