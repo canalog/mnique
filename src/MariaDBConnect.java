@@ -24,7 +24,7 @@ public class MariaDBConnect {
 			e.printStackTrace();
 		}
 		//connect DB(나중에 알아서 받아)
-		conn = DriverManager.getConnection("jdbc:mysql://localhost:3306","root","password");
+		conn = DriverManager.getConnection("jdbc:mysql://localhost:3306","root","1111");
 		System.out.println("Connection Success!");
 			
 		//create sql statements
@@ -56,7 +56,7 @@ public class MariaDBConnect {
 			e.printStackTrace();
 		}
 		//connect DB(나중에 알아서 받아)
-		conn = DriverManager.getConnection("jdbc:mysql://localhost:3306","root","password");
+		conn = DriverManager.getConnection("jdbc:mysql://localhost:3306","root","1111");
 		System.out.println("Connection Success!");
 			
 		//create sql statements
