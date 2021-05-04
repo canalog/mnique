@@ -21,7 +21,7 @@ public class CP_main {
 
 		HashMap<String, HashMap<String,Double>> attribute_values = new HashMap<String,HashMap<String,Double>>();
 		
-		attribute_values = CalculateValues("NHIS_10000");
+		attribute_values = CalculateValues(otable);
 
 //		Iterator<String> properties = attribute_values.keySet().iterator();
 //		while(properties.hasNext()) {
@@ -47,14 +47,14 @@ public class CP_main {
 		while(a.hasNext()) {
 			visited[i] = false;
 			attr[i] = a.next();
-			System.out.println(attr[i]);
+			// System.out.println(attr[i]);
 			i++;
 		}
 		
 		ArrayList<Integer> mm = new ArrayList<Integer>();
 		HashMap<Integer, ArrayList<String>> reid = new HashMap<Integer, ArrayList<String>>();
 		
-		for(int j = 1;j <= 21;j++) {
+		for(int j = 21;j >= 1;j--) {
 			comb(attr, visited, 0, 21, j, reid);
 		}
 		
@@ -81,7 +81,7 @@ public class CP_main {
 			ArrayList<Integer> rm = new ArrayList<Integer>();
 			String attrStr = makeAttrString(attr);
 			
-			// ¿øº» µ¥ÀÌÅÍ¼Â¿¡¼­ m+1 À¯ÀÏ¼ºÀ» ¸¸Á·ÇÏÁö ¾Ê´Â(°°Àº ¼Ó¼º°ªÀ» °®´Â ·¹ÄÚµå°¡ m°³ ÀÌÇÏÀÎ) ·¹ÄÚµå Ã£±â
+			// ì›ë³¸ ë°ì´í„°ì…‹ì—ì„œ m+1 ìœ ì¼ì„±ì„ ë§Œì¡±í•˜ì§€ ì•ŠëŠ”(ê°™ì€ ì†ì„±ê°’ì„ ê°–ëŠ” ë ˆì½”ë“œê°€ mê°œ ì´í•˜ì¸) ë ˆì½”ë“œ ì°¾ê¸°
 			ResultSet rs = MariaDBConnect.stmt.executeQuery("select count(*),"+ attrStr +" from "+otable+" group by "+attrStr);
 			while(rs.next()) {
 				if(rs.getInt(1) <= m) {
@@ -102,7 +102,7 @@ public class CP_main {
 				}
 			}
 			
-			// ºñ½Äº° µ¥ÀÌÅÍ¼Â¿¡¼­ m+1 À¯ÀÏ¼ºÀ» ¸¸Á·ÇÏÁö ¾Ê´Â(°°Àº ¼Ó¼º°ªÀ» °®´Â ·¹ÄÚµå°¡ m°³ ÀÌÇÏÀÎ) ·¹ÄÚµå Ã£±â
+			// ë¹„ì‹ë³„ ë°ì´í„°ì…‹ì—ì„œ m+1 ìœ ì¼ì„±ì„ ë§Œì¡±í•˜ì§€ ì•ŠëŠ”(ê°™ì€ ì†ì„±ê°’ì„ ê°–ëŠ” ë ˆì½”ë“œê°€ mê°œ ì´í•˜ì¸) ë ˆì½”ë“œ ì°¾ê¸°
 			rs = MariaDBConnect.stmt.executeQuery("select count(*),"+ attrStr +" from "+rtable+" group by "+attrStr);
 			while(rs.next()) {
 				if(rs.getInt(1) <= m) {
@@ -123,11 +123,11 @@ public class CP_main {
 				}
 			}
 			
-			// µÎ °³ÀÇ µ¥ÀÌÅÍ¼Â¿¡¼­ Ã£Àº ·¹ÄÚµå Áß id°¡ °°Àº ·¹ÄÚµå¸¦ Ã£¾Æ ¼Ó¼º°ª ºñ±³ (À§Çèµµ ³ôÀº ¼ø)
-			// °°À¸¸é Àç½Äº° µÇ´Â ·¹ÄÚµåÀÌ¹Ç·Î mm¿¡ ÀúÀå
+			// ë‘ ê°œì˜ ë°ì´í„°ì…‹ì—ì„œ ì°¾ì€ ë ˆì½”ë“œ ì¤‘ idê°€ ê°™ì€ ë ˆì½”ë“œë¥¼ ì°¾ì•„ ì†ì„±ê°’ ë¹„êµ (ìœ„í—˜ë„ ë†’ì€ ìˆœ)
+			// ê°™ìœ¼ë©´ ì¬ì‹ë³„ ë˜ëŠ” ë ˆì½”ë“œì´ë¯€ë¡œ mmì— ì €ì¥
 			for(int i=0;i<om.size();i++) {
 				if(rm.indexOf(om.get(i)) != -1) {
-					// TODO: id ÀÖÀ¸¸é continue ÇÏ±â
+					// TODO: id ìˆìœ¼ë©´ continue í•˜ê¸°
 					if(reid.containsKey(om.get(i))) continue;
 					
 					rs = MariaDBConnect.stmt.executeQuery("select "+ attrStr +" from "+ rtable +" where "+id+"="+om.get(i));
@@ -152,7 +152,7 @@ public class CP_main {
 								break;
 							}
 						}
-						// id ÀúÀå
+						// id ì €ì¥
 						if(isSame) {
 							if(reid.size() >= terminateCond) return;
 							// mm.add(om.get(i));
@@ -200,7 +200,7 @@ public class CP_main {
 	}
 
 	
-	// sql query¿¡ ¾µ ¼Ó¼º string ¸¸µé±â
+	// sql queryì— ì“¸ ì†ì„± string ë§Œë“¤ê¸°
 	// return : attr_name1, attr_name2, ... , attr_nameN
 	public static String makeAttrString(ArrayList<String> attr) {
 		String ret = attr.get(0);
@@ -247,20 +247,20 @@ public class CP_main {
 			ArrayList<Integer> rm = new ArrayList<Integer>();
 			ArrayList<Integer> mm = new ArrayList<Integer>();
 			String attr = a.next();
-			// ¿øº» µ¥ÀÌÅÍ¼Â¿¡¼­ m+1 À¯ÀÏ¼ºÀ» ¸¸Á·ÇÏÁö ¾Ê´Â(°°Àº ¼Ó¼º°ªÀ» °®´Â ·¹ÄÚµå°¡ m°³ ÀÌÇÏÀÎ) ·¹ÄÚµå Ã£±â
+			// ì›ë³¸ ë°ì´í„°ì…‹ì—ì„œ m+1 ìœ ì¼ì„±ì„ ë§Œì¡±í•˜ì§€ ì•ŠëŠ”(ê°™ì€ ì†ì„±ê°’ì„ ê°–ëŠ” ë ˆì½”ë“œê°€ mê°œ ì´í•˜ì¸) ë ˆì½”ë“œ ì°¾ê¸°
 			ResultSet rs = db.executeQuery("select count(*),"+ id +" from "+otable+" group by "+attr);
 			while(rs.next()) {
 				if(rs.getInt(1) <= m) om.add(rs.getInt(2));
 			}
 			
-			// ºñ½Äº° µ¥ÀÌÅÍ¼Â¿¡¼­ m+1 À¯ÀÏ¼ºÀ» ¸¸Á·ÇÏÁö ¾Ê´Â(°°Àº ¼Ó¼º°ªÀ» °®´Â ·¹ÄÚµå°¡ m°³ ÀÌÇÏÀÎ) ·¹ÄÚµå Ã£±â
+			// ë¹„ì‹ë³„ ë°ì´í„°ì…‹ì—ì„œ m+1 ìœ ì¼ì„±ì„ ë§Œì¡±í•˜ì§€ ì•ŠëŠ”(ê°™ì€ ì†ì„±ê°’ì„ ê°–ëŠ” ë ˆì½”ë“œê°€ mê°œ ì´í•˜ì¸) ë ˆì½”ë“œ ì°¾ê¸°
 			rs = db.executeQuery("select count(*),"+ id +" from "+rtable+" group by "+attr);
 			while(rs.next()) {
 				if(rs.getInt(1) <= m) rm.add(rs.getInt(2));
 			}
 			
-			// µÎ °³ÀÇ µ¥ÀÌÅÍ¼Â¿¡¼­ Ã£Àº ·¹ÄÚµå Áß id°¡ °°Àº ·¹ÄÚµå¸¦ Ã£¾Æ ¼Ó¼º°ª ºñ±³
-			// °°À¸¸é Àç½Äº° µÇ´Â ·¹ÄÚµåÀÌ¹Ç·Î mm¿¡ ÀúÀå
+			// ë‘ ê°œì˜ ë°ì´í„°ì…‹ì—ì„œ ì°¾ì€ ë ˆì½”ë“œ ì¤‘ idê°€ ê°™ì€ ë ˆì½”ë“œë¥¼ ì°¾ì•„ ì†ì„±ê°’ ë¹„êµ
+			// ê°™ìœ¼ë©´ ì¬ì‹ë³„ ë˜ëŠ” ë ˆì½”ë“œì´ë¯€ë¡œ mmì— ì €ì¥
 			for(int i=0;i<om.size();i++) {
 				if(rm.indexOf(om.get(i)) != -1) {
 					rs = db.executeQuery("select "+ attr +" from "+ rtable +" where "+id+"="+om.get(i));
