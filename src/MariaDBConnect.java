@@ -146,4 +146,8 @@ public class MariaDBConnect {
 		}
 		return Map;
 	}
+	
+	public ResultSet executeQuery(String query) throws SQLException{
+		return stmt.executeQuery(query);
+	}
 }
