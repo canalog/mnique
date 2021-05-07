@@ -7,6 +7,8 @@ public class CP_main {
 	static String rtable = "r4";
 	static String id = "row_id";
 	static int terminateCond = 50;
+	static int thres = 9000;
+	
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
 		MariaDBConnect db = new MariaDBConnect();
 		db.connect();
@@ -23,39 +25,26 @@ public class CP_main {
 		
 		attribute_values = CalculateValues(otable);
 
-//		Iterator<String> properties = attribute_values.keySet().iterator();
-//		while(properties.hasNext()) {
-//			String key = properties.next();
-//			System.out.println(key+" "+attribute_values.get(key));
-//		}
-//		System.out.println();
 		attribute = CalculateAttributes(attribute_values);
-//		
-//		Iterator<String> a = attribute.keySet().iterator();
-//		while(a.hasNext()) {
-//			String key = a.next();
-//			System.out.println(key+" "+attribute.get(key));
-//		}
 		
 		List<String> arranged_attr = new ArrayList<>();
 		arranged_attr = arrange(attribute);
 		
 		Iterator<String> a = arranged_attr.iterator();
-		String[] attr = new String[21];
-		boolean[] visited = new boolean[21];
+		String[] attr = new String[arranged_attr.size()];
+		boolean[] visited = new boolean[arranged_attr.size()];
 		int i = 0;
 		while(a.hasNext()) {
 			visited[i] = false;
 			attr[i] = a.next();
-			// System.out.println(attr[i]);
 			i++;
 		}
 		
 		ArrayList<Integer> mm = new ArrayList<Integer>();
 		HashMap<Integer, ArrayList<String>> reid = new HashMap<Integer, ArrayList<String>>();
 		
-		for(int j = 21;j >= 1;j--) {
-			comb(attr, visited, 0, 21, j, reid);
+		for(int j = 1;j <= attr.length; j++) {
+			comb(attr, visited, 0, attr.length, j, reid);
 		}
 		
 		Iterator<Integer> reidi = reid.keySet().iterator();
@@ -127,7 +116,6 @@ public class CP_main {
 			// 같으면 재식별 되는 레코드이므로 mm에 저장
 			for(int i=0;i<om.size();i++) {
 				if(rm.indexOf(om.get(i)) != -1) {
-					// TODO: id 있으면 continue 하기
 					if(reid.containsKey(om.get(i))) continue;
 					
 					rs = MariaDBConnect.stmt.executeQuery("select "+ attrStr +" from "+ rtable +" where "+id+"="+om.get(i));
@@ -155,18 +143,11 @@ public class CP_main {
 						// id 저장
 						if(isSame) {
 							if(reid.size() >= terminateCond) return;
-							// mm.add(om.get(i));
 							reid.put(om.get(i), attr);
 						}
 					}
 				}
 			}
-			
-//			System.out.println(attrStr + " " + mm.size());
-//			if(mm.size()<10)
-//			for(int i=0;i<mm.size();i++) {
-//				System.out.println(mm.get(i));
-//			}
 			
 			return;
 		}
@@ -190,12 +171,6 @@ public class CP_main {
 			}
 			
 		});
-//		Iterator it = list.iterator();
-//
-//		while(it.hasNext()) {
-//			String temp = (String) it.next();
-//			System.out.println(temp+" = "+attribute.get(temp));
-//		}
 		return list;
 	}
 
@@ -274,18 +249,7 @@ public class CP_main {
 						mm.add(om.get(i));
 					}
 				}
-//				for(int j=0;j<rm.size();j++) {
-//					if(om.get(i) == rm.get(j)) {
-//						
-//					}
-//				}
 			}
-			
-//			System.out.println(attr + " " + mm.size());
-//			if(mm.size()<10)
-//			for(int i=0;i<mm.size();i++) {
-//				System.out.println(mm.get(i));
-//			}
 		}
 	}
 	
@@ -316,9 +280,11 @@ public class CP_main {
 			sql = "select "+properties.get(i)+", count(*) from "+table+" group by "+properties.get(i);
 			 MariaDBConnect.rs = MariaDBConnect.stmt.executeQuery(sql);
 			while( MariaDBConnect.rs.next()) {
-				values.put( MariaDBConnect.rs.getString(1),  1/MariaDBConnect.rs.getDouble(2));
+				// 임계값보다 낮으면 속성 저장 
+				if(MariaDBConnect.rs.getDouble(2) < thres) values.put( MariaDBConnect.rs.getString(1),  1/MariaDBConnect.rs.getDouble(2));
 			}
-			attribute_values.put(properties.get(i), values);
+			// 모든 속성값이 제외되지 않았다면 저장
+			if(!values.isEmpty()) attribute_values.put(properties.get(i), values);
 		}
 		return attribute_values;
 	}
