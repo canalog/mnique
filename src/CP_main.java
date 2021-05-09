@@ -28,7 +28,7 @@ public class CP_main {
 		attribute = CalculateAttributes(attribute_values);
 		
 		List<String> arranged_attr = new ArrayList<>();
-		arranged_attr = arrange(attribute);
+		arranged_attr = arrange(attribute,attribute_values);
 		
 		Iterator<String> a = arranged_attr.iterator();
 		String[] attr = new String[arranged_attr.size()];
@@ -158,7 +158,7 @@ public class CP_main {
 		}
 	}
 	
-	public static List<String> arrange(HashMap<String,Double> attribute){
+	public static List<String> arrange(HashMap<String,Double> attribute,HashMap<String,HashMap<String,Double>> attribute_values){
 		List<String> list = new ArrayList<>();
 		list.addAll(attribute.keySet());
 		Collections.sort(list,new Comparator() {
@@ -167,10 +167,29 @@ public class CP_main {
 				Object v1 = attribute.get(o1);
 				Object v2 = attribute.get(o2);
 				// TODO Auto-generated method stub
+				if(v1.equals(v2)) {
+					List<Double> list1 = new ArrayList<>();
+					List<Double> list2 = new ArrayList<>();
+					list1 = arrange_attributevalues(attribute_values.get(o1));
+					list2 = arrange_attributevalues(attribute_values.get(o2));
+					v1 = attribute_values.get(o1).get(list1.get(list1.size()/2));
+					v2 = attribute_values.get(o2).get(list1.get(list2.size()/2));
+				}
 				return ((Comparable)v2).compareTo(v1);
 			}
-			
 		});
+//		Iterator it = list.iterator();
+//
+//		while(it.hasNext()) {
+//			String temp = (String) it.next();
+//			System.out.println(temp+" = "+attribute.get(temp));
+//		}
+		return list;
+	}
+	
+	public static List<Double> arrange_attributevalues(HashMap<String,Double> attribute_values){
+		List<Double> list = new ArrayList<Double>(attribute_values.values());
+		list.sort(Comparator.reverseOrder());
 		return list;
 	}
 
