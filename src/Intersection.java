@@ -9,12 +9,12 @@ public class Intersection {
 		MariaDBConnect db = new MariaDBConnect();
 		db.connect();
 
-		HashMap<Integer, HashMap<String, String>> original = db.get_data("NHIS_10000");
-		HashMap<Integer, HashMap<String, String>> version1 = db.get_data("R1");
+//		HashMap<Integer, HashMap<String, String>> original = db.get_data("NHIS_10000");
+//		HashMap<Integer, HashMap<String, String>> version1 = db.get_data("R1");
 
-		HashMap<String, Double> std = db.getSTD(db.getNumberColumns("nhis_10000"));
-		HashMap<String, Double> round = round(original);
-		HashMap<Integer, HashMap<String, String>> intersect = intersection(original, version1, round);
+//		HashMap<String, Double> std = db.getSTD(db.getNumberColumns("nhis_10000"));
+//		HashMap<String, Double> round = round(original);
+//		HashMap<Integer, HashMap<String, String>> intersect = intersection(original, version1, round);
 
 	}
 

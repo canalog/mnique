@@ -36,8 +36,8 @@ public class MariaDBConnect {
 		HashMap<Integer,HashMap<String,String>> o_datas = new HashMap<Integer,HashMap<String,String>>();
 		HashMap<Integer,HashMap<String,String>> r_datas = new HashMap<Integer,HashMap<String,String>>();
 			
-		o_datas = get_data("NHIS_10000");
-		r_datas = get_data("R1");
+		// o_datas = get_data("NHIS_10000");
+		//r_datas = get_data("R1");
 
 //		for(Integer i : o_datas.keySet()) {
 //			System.out.println("Key: "+i+" Values: "+o_datas.get(i));
@@ -56,7 +56,7 @@ public class MariaDBConnect {
 			e.printStackTrace();
 		}
 		//connect DB(나중에 알아서 받아)
-		conn = DriverManager.getConnection("jdbc:mysql://localhost:3306","root","1111");
+		conn = DriverManager.getConnection("jdbc:mysql://localhost:3306","root","root");
 		System.out.println("Connection Success!");
 			
 		//create sql statements
@@ -112,7 +112,7 @@ public class MariaDBConnect {
 		return std;
 	}
 
-	public static HashMap<Integer, HashMap<String, String>> get_data(String table) throws SQLException {
+	public static HashMap<Integer, HashMap<String, Double>> get_data(String table) throws SQLException {
 
 		rs = stmt.executeQuery("select * from "+table);
 		rsmd = rs.getMetaData();
@@ -124,22 +124,22 @@ public class MariaDBConnect {
 		
 		String pk = primaryKey("NHIS_10000");
 		
-		HashMap<Integer,HashMap<String,String>> Map = new HashMap<Integer,HashMap<String,String>>();
+		HashMap<Integer,HashMap<String,Double>> Map = new HashMap<Integer,HashMap<String,Double>>();
 		
 		String sql2 = "select * from ";
 		rs = stmt.executeQuery(sql2 + table);
 		
 		int count = 0;
-		HashMap<String,String> p;
+		HashMap<String,Double> p;
 		String s;
 		while(rs.next()) {
-			p = new HashMap<String,String>();
+			p = new HashMap<String,Double>();
 			for(int i=1;i<=property_num;i++) {
 				s = properties.get(i-1).toLowerCase();
 				if(s.equals(pk)) {
 					count = Integer.parseInt(rs.getString(i));
 				} else {
-					p.put(s,rs.getString(i));
+					p.put(s,rs.getDouble(i));
 				}
 			}
 			Map.put(count, p);
