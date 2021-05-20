@@ -2,11 +2,13 @@ import java.sql.*;
 import java.util.*;
 
 public class CP_main {
-	static int m = 3;
-	static String otable = "NHIS_10000";
+	static int m = 1;
+//	static String otable = "original";
+//	static String rtable = "deidentified";
+	static String otable = "nhis_10000";
 	static String rtable = "r4";
 	static String id = "row_id";
-	static int terminateCond = 10;
+	static int terminateCond = 50;
 	static int thres = 9000;
 	static HashMap<String, Double> estimateThres = new HashMap<String, Double>();
 	static HashMap<String, Double> min = new HashMap<String, Double>();
@@ -14,14 +16,25 @@ public class CP_main {
 	static HashMap<Integer, HashMap<String, Double>> estimateThres2 = new HashMap<Integer, HashMap<String, Double>>();
 	
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
+		
+	}
+	
+	public static HashMap<Integer, ArrayList<String>> exactValue(String[] args) throws SQLException{
 		MariaDBConnect db = new MariaDBConnect();
 		db.connect();
+		
+		// 모든 매개변수가 항상 전달된다고 가정(default 값)
+		if(args != null && args.length >= 3) {
+			m = Integer.parseInt(args[0]);
+			terminateCond = Integer.parseInt(args[1]);
+			thres = Integer.parseInt(args[2]);
+		}
 		
 		HashMap<Integer,HashMap<String,Double>> o_datas = new HashMap<Integer,HashMap<String,Double>>();
 		HashMap<Integer,HashMap<String,Double>> r_datas = new HashMap<Integer,HashMap<String,Double>>();
 			
-		o_datas = MariaDBConnect.get_data("NHIS_10000");
-		r_datas = MariaDBConnect.get_data("R1");
+		o_datas = MariaDBConnect.get_data(otable);
+		r_datas = MariaDBConnect.get_data(rtable);
 		
 		HashMap<String,Double> attribute = new HashMap<String,Double>();
 
@@ -45,8 +58,60 @@ public class CP_main {
 			attr[i] = a.next();
 			i++;
 		}
+		HashMap<Integer, ArrayList<String>> reid = new HashMap<Integer, ArrayList<String>>();
 		
-		ArrayList<Integer> mm = new ArrayList<Integer>();
+		for(int j = 1;j <= attr.length; j++) {
+			comb(attr, visited, 0, attr.length, j, reid);
+		}
+		
+		Iterator<Integer> reidi = reid.keySet().iterator();
+		while(reidi.hasNext()) {
+			int key = reidi.next();
+			System.out.println("re-identified id : "+key+", attribute : "+reid.get(key));
+		}
+		
+		return reid;
+	}
+	
+	public static HashMap<Integer, ArrayList<String>> estimateValue(String[] args) throws SQLException{
+		MariaDBConnect db = new MariaDBConnect();
+		db.connect();
+		
+		// 모든 매개변수가 항상 전달된다고 가정(default 값)
+		if(args != null && args.length >= 3) {
+			m = Integer.parseInt(args[0]);
+			terminateCond = Integer.parseInt(args[1]);
+			thres = Integer.parseInt(args[2]);
+		}
+		
+		HashMap<Integer,HashMap<String,Double>> o_datas = new HashMap<Integer,HashMap<String,Double>>();
+		HashMap<Integer,HashMap<String,Double>> r_datas = new HashMap<Integer,HashMap<String,Double>>();
+			
+		o_datas = MariaDBConnect.get_data(otable);
+		r_datas = MariaDBConnect.get_data(rtable);
+		
+		HashMap<String,Double> attribute = new HashMap<String,Double>();
+
+		HashMap<String, HashMap<String,Double>> attribute_values = new HashMap<String,HashMap<String,Double>>();
+		
+		attribute_values = CalculateValues(otable);
+
+		attribute = CalculateAttributes(attribute_values);
+		
+		calEstiThres(attribute, o_datas, r_datas);
+		
+		List<String> arranged_attr = new ArrayList<>();
+		arranged_attr = arrange(attribute,attribute_values);
+		
+		Iterator<String> a = arranged_attr.iterator();
+		String[] attr = new String[arranged_attr.size()];
+		boolean[] visited = new boolean[arranged_attr.size()];
+		int i = 0;
+		while(a.hasNext()) {
+			visited[i] = false;
+			attr[i] = a.next();
+			i++;
+		}
 		HashMap<Integer, ArrayList<String>> reid = new HashMap<Integer, ArrayList<String>>();
 		
 		for(int j = 1;j <= attr.length; j++) {
@@ -58,6 +123,8 @@ public class CP_main {
 			int key = reidi.next();
 			System.out.println("re-identified id : "+key+", attribute : "+reid.get(key));
 		}
+		
+		return reid;
 	}
 	
 	public static void calEstiThres(HashMap<String, Double> attribute,

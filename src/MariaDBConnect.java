@@ -29,7 +29,7 @@ public class MariaDBConnect {
 			
 		//create sql statements
 		stmt = conn.createStatement();
-		stmt.executeUpdate("use NHIS");
+		stmt.executeUpdate("use test");
 			
 		//resultsets = get the result of sql queries
 
@@ -61,7 +61,7 @@ public class MariaDBConnect {
 			
 		//create sql statements
 		stmt = conn.createStatement();
-		stmt.executeUpdate("use NHIS");
+		stmt.executeUpdate("use nhis");
 	}
 	
 	public static String primaryKey(String table) throws SQLException {
