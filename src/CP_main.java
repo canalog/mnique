@@ -7,7 +7,6 @@ public class CP_main {
 	static String rtable = "deidentified";
 //	static String otable = "nhis_10000";
 //	static String rtable = "r4";
-	static String id = "row_id";
 	static int terminateCond = 50;
 	static int thres = 9000;
 	static String primary_key = "row_id";
@@ -210,7 +209,7 @@ public class CP_main {
 		              	  	}
 						attrVal[i] = v;
 					}
-					ResultSet rs2 = MariaDBConnect.stmt.executeQuery("select "+id+" from "+otable+" where "+makeEqualString(attr, attrVal, cut));
+					ResultSet rs2 = MariaDBConnect.stmt.executeQuery("select "+primary_key+" from "+otable+" where "+makeEqualString(attr, attrVal, cut));
 					while(rs2.next()) {
 						om.add(rs2.getInt(1));
 					}
@@ -231,7 +230,7 @@ public class CP_main {
 		              	 }
 						attrVal[i] = v;
 					}
-					ResultSet rs2 = MariaDBConnect.stmt.executeQuery("select "+id+" from "+rtable+" where "+makeEqualString(attr, attrVal, cut));
+					ResultSet rs2 = MariaDBConnect.stmt.executeQuery("select "+primary_key+" from "+rtable+" where "+makeEqualString(attr, attrVal, cut));
 					while(rs2.next()) {
 						rm.add(rs2.getInt(1));
 					}
@@ -244,14 +243,14 @@ public class CP_main {
 				if(rm.indexOf(om.get(i)) != -1) {
 					if(reid.containsKey(om.get(i))) continue;
 					
-					rs = MariaDBConnect.stmt.executeQuery("select "+ attrStr +" from "+ rtable +" where "+id+"="+om.get(i));
+					rs = MariaDBConnect.stmt.executeQuery("select "+ attrStr +" from "+ rtable +" where "+primary_key+"="+om.get(i));
 					rs.next();
 					String[] rAttr = new String[attr.size()];
 					for(int j = 0;j < rAttr.length;j++){
 						rAttr[j] = rs.getString(1+j);
 					}
 					
-					rs = MariaDBConnect.stmt.executeQuery("select "+ attrStr +" from "+ otable +" where "+id+"="+om.get(i));
+					rs = MariaDBConnect.stmt.executeQuery("select "+ attrStr +" from "+ otable +" where "+primary_key+"="+om.get(i));
 					rs.next();
 					String[] oAttr = new String[attr.size()];
 					for(int j = 0;j < oAttr.length;j++){
@@ -314,7 +313,7 @@ public class CP_main {
 					rs2.next();
 					if(rs2.getInt(1) > m) continue;
 					
-					rs2 = MariaDBConnect.stmt.executeQuery("select "+id+" from "+otable+" where "+makeString(attr, val));
+					rs2 = MariaDBConnect.stmt.executeQuery("select "+primary_key+" from "+otable+" where "+makeString(attr, val));
 					while(rs2.next()) {
 						if(!reid.containsKey(rs2.getInt(1))) om.add(rs2.getInt(1));
 					}
@@ -335,7 +334,7 @@ public class CP_main {
 					rs2.next();
 					if(rs2.getInt(1) > m) continue;
 					
-					rs2 = MariaDBConnect.stmt.executeQuery("select "+id+" from "+rtable+" where "+makeString(attr, val));
+					rs2 = MariaDBConnect.stmt.executeQuery("select "+primary_key+" from "+rtable+" where "+makeString(attr, val));
 					while(rs2.next()) {
 						if(!reid.containsKey(rs2.getInt(1))) rm.add(rs2.getInt(1));
 					}
@@ -348,14 +347,14 @@ public class CP_main {
 				if(rm.indexOf(om.get(i)) != -1) {
 					if(reid.containsKey(om.get(i))) continue;
 					
-					rs = MariaDBConnect.stmt.executeQuery("select "+ attrStr +" from "+ rtable +" where "+id+"="+om.get(i));
+					rs = MariaDBConnect.stmt.executeQuery("select "+ attrStr +" from "+ rtable +" where "+primary_key+"="+om.get(i));
 					rs.next();
 					String[] rAttr = new String[attr.size()];
 					for(int j = 0;j < rAttr.length;j++){
 						rAttr[j] = rs.getString(1+j);
 					}
 					
-					rs = MariaDBConnect.stmt.executeQuery("select "+ attrStr +" from "+ otable +" where "+id+"="+om.get(i));
+					rs = MariaDBConnect.stmt.executeQuery("select "+ attrStr +" from "+ otable +" where "+primary_key+"="+om.get(i));
 					rs.next();
 					String[] oAttr = new String[attr.size()];
 					for(int j = 0;j < oAttr.length;j++){
